@@ -113,9 +113,15 @@ public class CategoryService {
         String nameTurn;
         int cont;
         Optional<Turn> u = turnRepository.findById(turn.getId());
-        Category category = categoryRepository.getOne(categoryId);
+       Category category = null;
         
-        if ((category == null) || (u.isPresent() && u.get() != null)) {
+        if (categoryRepository.existsById(categoryId) ) {
+             category = categoryRepository.getOne(categoryId);
+        } else {
+            return null;
+        }
+        
+        if (u.isPresent() && u.get() != null) {
             return null;
         }
         

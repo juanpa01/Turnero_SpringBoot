@@ -66,4 +66,15 @@ public class AdviserController {
         }
     }
     
+    @GetMapping("/{adviserId}/endTurn")
+    @ResponseBody
+    public ResponseEntity<NextTurnResponse> endTurn(@PathVariable("adviserId") long adviserId) {
+        NextTurnResponse endTurn = adviserService.endTurn(adviserId);
+        if (endTurn == null) {
+            return  ResponseEntity.noContent().build();
+        } else {
+            return  ResponseEntity.status(HttpStatus.ACCEPTED).body(endTurn);
+        }
+    }
+ 
 }

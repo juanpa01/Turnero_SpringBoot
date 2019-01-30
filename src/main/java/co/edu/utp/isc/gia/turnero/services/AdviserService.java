@@ -11,6 +11,7 @@ import co.edu.utp.isc.gia.turnero.repository.AdviserRepository;
 import co.edu.utp.isc.gia.turnero.repository.TurnRepository;
 import co.edu.utp.isc.gia.turnero.ws.dto.DisplayResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.NextTurnResponse;
+import co.edu.utp.isc.gia.turnero.ws.dto.TurnResponse;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -76,6 +77,10 @@ public class AdviserService {
         Turn turnCalled = null;
         LocalDateTime updated = LocalDateTime.now();
         
+        if (listTurnsCalled.isEmpty()) {
+            return res;
+        }
+        
         turnCalled = listTurnsCalled.remove(0);
         turnCalled.setUpdated(updated);
         turnRepository.save(turnCalled);
@@ -135,6 +140,36 @@ public class AdviserService {
         return res;
     }
     
+    public NextTurnResponse endTurn(long adviserId) {
+        Adviser adviser = adviserRepository.getOne(adviserId);
+        List<Turn> listTurnsCalled = turnRepository.findByStateTurnAndAdviser("llamando", adviser);
+        LocalDateTime updated = LocalDateTime.now();
+        Turn turn = null;
+        
+        if (adviser == null || listTurnsCalled.isEmpty()) {
+            return null;
+        }
+        
+        turn = listTurnsCalled.remove(0);
+        turn.setStateTurn("terminado");
+        turn.setUpdated(updated);
+        
+        turnRepository.save(turn);
+        
+        NextTurnResponse nextTurnResponse = NextTurnResponse.builder()
+                .id(turn.getId())
+                .name(turn.getName())
+                .stateTurn(turn.getStateTurn())
+                .created(turn.getCreated())
+                .updated(turn.getUpdated())
+                .adviser(turn.getAdviser().getId())
+                .category(turn.getCategory().getId())
+                .build();
+        
+        return nextTurnResponse;
+        
+    }
+    
     private Turn updateStateTurn(List<Turn> listTurns, String state, Adviser adviser) {
         Turn  turn = listTurns.remove(0);
          LocalDateTime updated = LocalDateTime.now();
@@ -152,4 +187,6 @@ public class AdviserService {
         turnRepository.save(turn);
         return turn;
     }
+
+    
 }
