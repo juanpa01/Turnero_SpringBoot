@@ -7,7 +7,9 @@ package co.edu.utp.isc.gia.turnero.ws.controller;
 
 import co.edu.utp.isc.gia.turnero.services.AdviserService;
 import co.edu.utp.isc.gia.turnero.services.TurnService;
+import co.edu.utp.isc.gia.turnero.ws.dto.AverageResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.DisplayResponse;
+import co.edu.utp.isc.gia.turnero.ws.dto.EndTurnResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.NextTurnResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.TurnResponse;
 import java.util.List;
@@ -25,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author juan
  */
 @RestController
-@RequestMapping("advisers")
+@RequestMapping("api/advisers")
 public class AdviserController {
     
     @Autowired
@@ -46,9 +48,9 @@ public class AdviserController {
     
     @GetMapping("/{adviserId}/reCall")
     @ResponseBody
-    public ResponseEntity<List<DisplayResponse>> reCall(@PathVariable("adviserId") long adviserId) {
-        List<DisplayResponse> listDisplay = adviserService.reCall(adviserId);
-        if (listDisplay.isEmpty()) {
+    public ResponseEntity<DisplayResponse> reCall(@PathVariable("adviserId") long adviserId) {
+        DisplayResponse listDisplay = adviserService.reCall(adviserId);
+        if (listDisplay == null) {
             return  ResponseEntity.noContent().build();
         } else {
             return  ResponseEntity.status(HttpStatus.ACCEPTED).body(listDisplay);
@@ -57,8 +59,8 @@ public class AdviserController {
     
     @GetMapping("/{adviserId}/reCallLost")
     @ResponseBody
-    public ResponseEntity<List<DisplayResponse>> reCallLost(@PathVariable("adviserId") long adviserId) {
-        List<DisplayResponse> display = adviserService.reCallLost(adviserId);
+    public ResponseEntity<DisplayResponse> reCallLost(@PathVariable("adviserId") long adviserId) {
+        DisplayResponse display = adviserService.reCallLost(adviserId);
         if (display == null) {
             return  ResponseEntity.noContent().build();
         } else {
@@ -68,12 +70,48 @@ public class AdviserController {
     
     @GetMapping("/{adviserId}/endTurn")
     @ResponseBody
-    public ResponseEntity<NextTurnResponse> endTurn(@PathVariable("adviserId") long adviserId) {
-        NextTurnResponse endTurn = adviserService.endTurn(adviserId);
+    public ResponseEntity<EndTurnResponse> endTurn(@PathVariable("adviserId") long adviserId) {
+        EndTurnResponse endTurn = adviserService.endTurn(adviserId);
         if (endTurn == null) {
-            return  ResponseEntity.noContent().build();
+            return  ResponseEntity.notFound().build();
         } else {
             return  ResponseEntity.status(HttpStatus.ACCEPTED).body(endTurn);
+        }
+    }
+    
+    @GetMapping("/{adviserId}/lost")
+    @ResponseBody
+    public ResponseEntity<List<DisplayResponse>> lost(@PathVariable("adviserId") long adviserId) {
+        List<DisplayResponse> lostTurns = adviserService.lost(adviserId);
+        
+        if (lostTurns.isEmpty()) {
+            return  ResponseEntity.noContent().build();
+        } else {
+            return  ResponseEntity.status(HttpStatus.ACCEPTED).body(lostTurns);
+        }
+    }
+    
+    @GetMapping("/{adviserId}/listReport")
+    @ResponseBody
+    public ResponseEntity<List<DisplayResponse>> listReport(@PathVariable("adviserId") long adviserId) {
+        List<DisplayResponse> listReport = adviserService.listReport(adviserId);
+        
+        if (listReport.isEmpty()) {
+            return  ResponseEntity.noContent().build();
+        } else {
+            return  ResponseEntity.status(HttpStatus.ACCEPTED).body(listReport);
+        }
+    }
+    
+    @GetMapping("/{adviserId}/average")
+    @ResponseBody
+    public ResponseEntity<AverageResponse> average(@PathVariable("adviserId") long adviserId) {
+        AverageResponse average = adviserService.average(adviserId);
+        
+        if (average == null) {
+            return  ResponseEntity.noContent().build();
+        } else {
+            return  ResponseEntity.status(HttpStatus.ACCEPTED).body(average);
         }
     }
  

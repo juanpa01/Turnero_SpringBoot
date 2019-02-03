@@ -15,18 +15,17 @@ import lombok.Setter;
  *
  * @author juan
  */
-
 @Builder
 @Setter 
 @Getter
-public class NextTurnResponse {
+public class EndTurnResponse {
     private long id;
     private String name;
     private LocalDateTime timeTurn;
     private String stateTurn;
     private LocalDateTime created;
     private LocalDateTime updated;
+    private LocalTime finalTime;
     private long category;
     private long adviser;
-    
 }

@@ -5,7 +5,6 @@
  */
 package co.edu.utp.isc.gia.turnero.ws.dto;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import lombok.Builder;
 import lombok.Getter;
@@ -15,18 +14,12 @@ import lombok.Setter;
  *
  * @author juan
  */
-
 @Builder
 @Setter 
 @Getter
-public class NextTurnResponse {
-    private long id;
-    private String name;
-    private LocalDateTime timeTurn;
-    private String stateTurn;
-    private LocalDateTime created;
-    private LocalDateTime updated;
-    private long category;
-    private long adviser;
+public class AverageResponse {
+    private int hours;
+    private int minutes;
+    private int seconds;
     
 }

@@ -15,6 +15,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -29,9 +30,9 @@ import org.springframework.web.bind.annotation.RestController;
  *
  * @author juan
  */
-
+//@CrossOrigin(origins = "http://localhost:4200")
 @RestController
-@RequestMapping("categories")
+@RequestMapping("api/categories")
 public class CategoryController {
     
     @Autowired
@@ -100,13 +101,9 @@ public class CategoryController {
     
      @PostMapping("/{categoryId}/turns")
     @ResponseBody
-    public ResponseEntity<TurnResponse> generateTurn(@PathVariable("categoryId") long categoryId, 
-                                        @RequestBody Turn turn) {
-        if (turn == null) {
-            return  ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
-        
-        TurnResponse newTurn = categoryService.generateTurn(categoryId, turn);
+    public ResponseEntity<TurnResponse> generateTurn(@PathVariable("categoryId") long categoryId) {
+
+        TurnResponse newTurn = categoryService.generateTurn(categoryId);
         
         if (newTurn == null) {
             return  ResponseEntity.status(HttpStatus.NOT_FOUND).build();

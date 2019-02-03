@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 
 @RestController
-@RequestMapping("/display")
+@RequestMapping("api//display")
 public class DisplayController {
     
     @Autowired

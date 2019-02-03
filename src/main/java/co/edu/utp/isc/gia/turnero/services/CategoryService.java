@@ -108,11 +108,10 @@ public class CategoryService {
          return categoryResponse;
     }
     
-    public TurnResponse generateTurn(long categoryId, Turn turn) {
-        Turn newTurn = null;
+    public TurnResponse generateTurn(long categoryId) {
+        Turn newTurn = new Turn();
         String nameTurn;
         int cont;
-        Optional<Turn> u = turnRepository.findById(turn.getId());
        Category category = null;
         
         if (categoryRepository.existsById(categoryId) ) {
@@ -121,21 +120,17 @@ public class CategoryService {
             return null;
         }
         
-        if (u.isPresent() && u.get() != null) {
-            return null;
-        }
-        
         cont = category.getCont();
         cont++;
         nameTurn = category.getName() + cont;
         category.setCont(cont);
        
-        turn.setName(nameTurn);
-        turn.setStateTurn("listado");
-        turn.setCategory(category);
+        newTurn.setName(nameTurn);
+        newTurn.setStateTurn("listado");
+        newTurn.setCategory(category);
         
         categoryRepository.save(category);
-        newTurn = turnRepository.save(turn);
+        newTurn = turnRepository.save(newTurn);
         
         if (newTurn != null) {
             TurnResponse turnResponse = TurnResponse.builder()
