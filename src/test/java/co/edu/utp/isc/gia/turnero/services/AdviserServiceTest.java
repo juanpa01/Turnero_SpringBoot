@@ -127,7 +127,7 @@ public class AdviserServiceTest {
          assertNull(res);
     }
     
-    @Test
+   /* @Test
     public void reCallNotNull() {
         Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));
         long id = adviser.getId();
@@ -172,7 +172,7 @@ public class AdviserServiceTest {
         turn2.setUpdated(LocalDateTime.now());
         this.turnRepository.save(turn2);
         
-        DisplayResponse res = this.adviserService.reCallLost(id);
+        isplayResponse res = this.adviserService.reCallLost(id);
         adviserRepository.deleteAll();
         turnRepository.deleteAll();
         categoryRepository.deleteAll();
@@ -227,6 +227,7 @@ public class AdviserServiceTest {
         categoryRepository.deleteAll();
          assertNotNull(res);
     }
+    */
     
     @Test
     public void enTurnNull() {

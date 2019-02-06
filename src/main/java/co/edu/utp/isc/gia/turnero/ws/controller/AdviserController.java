@@ -57,10 +57,11 @@ public class AdviserController {
         }
     }
     
-    @GetMapping("/{adviserId}/reCallLost")
+    @GetMapping("/{adviserId}/reCallLost/turns/{turnId}")
     @ResponseBody
-    public ResponseEntity<DisplayResponse> reCallLost(@PathVariable("adviserId") long adviserId) {
-        DisplayResponse display = adviserService.reCallLost(adviserId);
+    public ResponseEntity<DisplayResponse> reCallLost(@PathVariable("adviserId") long adviserId,
+                                                      @PathVariable("turnId") long turnId) {
+        DisplayResponse display = adviserService.reCallLost(adviserId, turnId);
         if (display == null) {
             return  ResponseEntity.noContent().build();
         } else {
@@ -79,10 +80,10 @@ public class AdviserController {
         }
     }
     
-    @GetMapping("/{adviserId}/lost")
+    @GetMapping("/lost")
     @ResponseBody
-    public ResponseEntity<List<DisplayResponse>> lost(@PathVariable("adviserId") long adviserId) {
-        List<DisplayResponse> lostTurns = adviserService.lost(adviserId);
+    public ResponseEntity<List<DisplayResponse>> lost() {
+        List<DisplayResponse> lostTurns = adviserService.lost();
         
         if (lostTurns.isEmpty()) {
             return  ResponseEntity.noContent().build();

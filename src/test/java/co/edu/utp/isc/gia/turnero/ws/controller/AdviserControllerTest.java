@@ -98,7 +98,7 @@ public class AdviserControllerTest {
         
         assertEquals(turn.getStatusCode(), HttpStatus.NO_CONTENT);
     }
-    
+    /*
     @Test
     public void testReCallLostAceept() {
         this.adviserRepository.save(new Adviser("Juan", "1"));
@@ -124,6 +124,7 @@ public class AdviserControllerTest {
         
         assertEquals(turn.getStatusCode(), HttpStatus.NO_CONTENT);
     }
+    */
     
     @Test
     public void testEndTurnAceept() {

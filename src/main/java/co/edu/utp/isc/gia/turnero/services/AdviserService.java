@@ -18,6 +18,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -97,39 +98,48 @@ public class AdviserService {
         return displayResponse;
     }
     
-    public DisplayResponse reCallLost(long adviserId) {
-        List<DisplayResponse> res = new ArrayList<>(); 
-        Adviser adviser = adviserRepository.getOne(adviserId);
-        List<Turn> listTurnsLost = turnRepository.findByStateTurnAndAdviserOrderByUpdatedAsc("perdido", adviser);
-        List<Turn> listTurnsCalled = turnRepository.findByStateTurnAndAdviserOrderByUpdatedAsc("llamando", adviser);
-        Turn turn = null;
-        
-        if ((listTurnsLost.isEmpty() && listTurnsCalled.isEmpty()) || adviser == null) {
-            return null;
-        }
-        
-        if (!listTurnsCalled.isEmpty() && listTurnsLost.isEmpty()) {
-            return null;
-        }
-        
-        if (listTurnsCalled.isEmpty() && !listTurnsLost.isEmpty()) {
-            turn = updateStateTurn(listTurnsLost,"perdido", adviser);
-        }
-        
-        if (!listTurnsCalled.isEmpty() && !listTurnsLost.isEmpty()) {
-            turn = updateStateTurn(listTurnsLost,"perdido", adviser);
-            updateStateTurn(listTurnsCalled,"llamando", adviser);
+    public DisplayResponse reCallLost(long adviserId, long turnId) {
+       try {
+            Adviser adviser = adviserRepository.getOne(adviserId);
+            Turn lostTurn = this.turnRepository.getOne(turnId);
+            List<Turn> listTurnsLost = new ArrayList<>(); 
+            List<Turn> listTurnsCalled = turnRepository.findByStateTurnAndAdviserOrderByUpdatedAsc("llamando", adviser);
+            Turn turn = null;
+
+            if ((listTurnsLost.isEmpty() && listTurnsCalled.isEmpty()) ) {
+                return null;
+            }
             
-        }
-        
-        
-        DisplayResponse displayResponse = DisplayResponse.builder()
-                    .name(turn.getName())
-                    .adviserId(turn.getAdviser().getId())
-                    .updated(turn.getUpdated())
-                    .build();
-        
-        return displayResponse;
+            if ("perdido".equals(lostTurn.getStateTurn())) {
+                listTurnsLost.add(lostTurn);
+           }
+            
+
+            if (!listTurnsCalled.isEmpty() && listTurnsLost.isEmpty()) {
+                return null;
+            }
+
+            if (listTurnsCalled.isEmpty() && !listTurnsLost.isEmpty()) {
+                turn = updateStateTurn(listTurnsLost,"perdido", adviser);
+            }
+
+            if (!listTurnsCalled.isEmpty() && !listTurnsLost.isEmpty()) {
+                turn = updateStateTurn(listTurnsLost,"perdido", adviser);
+                updateStateTurn(listTurnsCalled,"llamando", adviser);
+
+            }
+
+
+            DisplayResponse displayResponse = DisplayResponse.builder()
+                        .name(turn.getName())
+                        .adviserId(turn.getAdviser().getId())
+                        .updated(turn.getUpdated())
+                        .build();
+
+            return displayResponse;
+       } catch (Exception e) {
+           return null;
+       }
     }
     
     public EndTurnResponse endTurn(long adviserId) {
@@ -164,10 +174,9 @@ public class AdviserService {
     
     
     
-    public List<DisplayResponse> lost(long adviserId) {
-        Adviser adviser = adviserRepository.getOne(adviserId);
+    public List<DisplayResponse> lost() {
         List<DisplayResponse> res = new ArrayList<>(); 
-        List<Turn> listTurnsLost = turnRepository.findByStateTurnAndAdviserOrderByUpdatedAsc("perdido", adviser);
+        List<Turn> listTurnsLost = turnRepository.findByStateTurnOrderByUpdatedAsc("perdido");
         
         if (listTurnsLost.isEmpty()) {
             return res;
@@ -176,7 +185,7 @@ public class AdviserService {
         for (Turn turn : listTurnsLost) {
             DisplayResponse displayResponse = DisplayResponse.builder()
                     .name(turn.getName())
-                    .adviserId(turn.getAdviser().getId())
+                    .turnId(turn.getId())
                     .updated(turn.getUpdated())
                     .build();
             
@@ -198,9 +207,7 @@ public class AdviserService {
             DisplayResponse displayResponse = DisplayResponse.builder()
                     .name(turn.getName())
                     .adviserId(turn.getAdviser().getId())
-                    .hours( (long) turn.getFinalTime().getHour())
                     .minutes((long) turn.getFinalTime().getMinute())
-                    .seconds((long) turn.getFinalTime().getSecond())
                     .updated(turn.getUpdated())
                     .build();
             
@@ -247,6 +254,7 @@ public class AdviserService {
          LocalDateTime updated = LocalDateTime.now();
         if ("llamando".equals(state)) {
             turn.setUpdated(updated);
+            turn.setAdviser(null);
             turn.setStateTurn("perdido");
         } else if ("listado".equals(state)) {
             turn.setTimeTurn(updated);
@@ -255,6 +263,7 @@ public class AdviserService {
             turn.setAdviser(adviser);
         } else if ("perdido".equals(state)) {
             turn.setTimeTurn(updated);
+            turn.setAdviser(adviser);
             turn.setUpdated(updated);
             turn.setStateTurn("llamando");
         }

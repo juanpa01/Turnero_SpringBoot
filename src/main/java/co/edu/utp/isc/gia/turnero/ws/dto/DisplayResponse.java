@@ -20,8 +20,7 @@ import lombok.Setter;
 public class DisplayResponse {
     private String name;
     private long adviserId;
-    private long hours;
+    private long turnId;
     private long minutes;
-    private long seconds;
     private LocalDateTime updated;
 }
