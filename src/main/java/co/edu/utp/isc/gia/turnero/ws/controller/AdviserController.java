@@ -40,7 +40,7 @@ public class AdviserController {
         NextTurnResponse turn = adviserService.nextTurn(adviserId);
         
         if (turn == null) {
-            return  ResponseEntity.noContent().build();
+            return  ResponseEntity.notFound().build();
         } else {
             return  ResponseEntity.status(HttpStatus.ACCEPTED).body(turn);
         }
@@ -115,5 +115,17 @@ public class AdviserController {
             return  ResponseEntity.status(HttpStatus.ACCEPTED).body(average);
         }
     }
- 
+    /*
+    @GetMapping("/{adviserId}/presentTurn")
+    @ResponseBody
+    public ResponseEntity<TurnResponse> presenTurn(@PathVariable("adviserId") long adviserId) {
+        TurnResponse turn = adviserService.average(adviserId);
+        
+        if (average == null) {
+            return  ResponseEntity.noContent().build();
+        } else {
+            return  ResponseEntity.status(HttpStatus.ACCEPTED).body(average);
+        }
+    }
+    */
 }

@@ -101,18 +101,18 @@ public class AdviserService {
     public DisplayResponse reCallLost(long adviserId, long turnId) {
        try {
             Adviser adviser = adviserRepository.getOne(adviserId);
-            Turn lostTurn = this.turnRepository.getOne(turnId);
+            Turn lostTurn = turnRepository.getOne(turnId);
             List<Turn> listTurnsLost = new ArrayList<>(); 
             List<Turn> listTurnsCalled = turnRepository.findByStateTurnAndAdviserOrderByUpdatedAsc("llamando", adviser);
             Turn turn = null;
-
-            if ((listTurnsLost.isEmpty() && listTurnsCalled.isEmpty()) ) {
-                return null;
-            }
             
             if ("perdido".equals(lostTurn.getStateTurn())) {
                 listTurnsLost.add(lostTurn);
            }
+            
+            if ((listTurnsLost.isEmpty() && listTurnsCalled.isEmpty()) ) {
+                return null;
+            }
             
 
             if (!listTurnsCalled.isEmpty() && listTurnsLost.isEmpty()) {
@@ -219,10 +219,8 @@ public class AdviserService {
     public AverageResponse average(long adviserId) {
         Adviser adviser = adviserRepository.getOne(adviserId);
         List<Turn> listReport = turnRepository.findByStateTurnAndAdviserOrderByUpdatedAsc("terminado", adviser);
-        int hours = 0;
         int minutes = 0;
-        int seconds = 0;
-        
+               
         if (listReport.isEmpty()) {
             return null;
         }
@@ -230,19 +228,13 @@ public class AdviserService {
         
         
         for(Turn turn : listReport) {
-            hours += turn.getFinalTime().getHour();
             minutes += turn.getFinalTime().getMinute();
-            seconds= turn.getFinalTime().getSecond();
         }
-        double finalHours = hours / tam;
+
         double finalMinutes = minutes / tam;
-        double finalSeconds = seconds / tam;
-        
         
         AverageResponse averageResponse = AverageResponse.builder()
-                .hours((int) Math.floor(finalHours))
-                .minutes((int) Math.floor(finalMinutes ))
-                .seconds((int) Math.floor( finalSeconds))
+                .minutes((long) Math.floor(finalMinutes ))
                 .build();
         
         return averageResponse;

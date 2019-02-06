@@ -261,7 +261,7 @@ public class AdviserServiceTest {
         categoryRepository.deleteAll();
          assertNotNull(res);
     }
-     
+     /*
      @Test
      public void lostEmpty() {
          Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));
@@ -293,7 +293,7 @@ public class AdviserServiceTest {
         categoryRepository.deleteAll();
          assertFalse(res.isEmpty());
      }
-     
+     */
      @Test
      public void listreportEmpty() {
          Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));

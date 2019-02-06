@@ -18,8 +18,5 @@ import lombok.Setter;
 @Setter 
 @Getter
 public class AverageResponse {
-    private int hours;
-    private int minutes;
-    private int seconds;
-    
+    private long minutes;
 }

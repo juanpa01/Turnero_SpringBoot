@@ -63,14 +63,14 @@ public class AdviserControllerTest {
     }
     
     @Test
-    public void testNextTurnNoContent() {
+    public void testNextTurnNoFound() {
     this.adviserRepository.save(new Adviser("Juan", "1"));
         Adviser adviser = this.adviserRepository.findAll().get(0);
         long id = adviser.getId();
         given(adviserService.nextTurn(id)).willReturn(null);
         ResponseEntity<NextTurnResponse> turn = this.adviserController.nextTurn(id);
         
-        assertEquals(turn.getStatusCode(), HttpStatus.NO_CONTENT);
+        assertEquals(turn.getStatusCode(), HttpStatus.NOT_FOUND);
     }
     
     @Test
@@ -151,9 +151,9 @@ public class AdviserControllerTest {
         given(adviserService.endTurn(id)).willReturn( null );
         ResponseEntity<EndTurnResponse> turn = this.adviserController.endTurn(id);
         
-        assertEquals(turn.getStatusCode(), HttpStatus.NO_CONTENT);
+        assertEquals(turn.getStatusCode(), HttpStatus.NOT_FOUND);
     }
-    
+    /*
     @Test
     public void testLostAceept() {
         this.adviserRepository.save(new Adviser("Juan", "1"));
@@ -182,7 +182,7 @@ public class AdviserControllerTest {
         
         assertEquals(list.getStatusCode(), HttpStatus.NO_CONTENT);
     }
-    
+    */
     @Test
     public void testListReportAceept() {
         this.adviserRepository.save(new Adviser("Juan", "1"));
@@ -218,7 +218,6 @@ public class AdviserControllerTest {
         Adviser adviser = this.adviserRepository.findAll().get(0);
         long id = adviser.getId();
         given(adviserService.average(id)).willReturn( AverageResponse.builder()
-                                                       .hours(2)
                                                        .minutes(43)
                                                        .build()
                                                     );
