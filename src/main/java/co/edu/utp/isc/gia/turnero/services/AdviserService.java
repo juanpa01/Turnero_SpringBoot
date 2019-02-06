@@ -19,7 +19,9 @@ import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -281,7 +283,15 @@ public class AdviserService {
         
         return turn;
     }
-
     
+    public Map<String, List<Long>> generatelist(long categorySize) {
+        Map<String, List<Long>> categories = new HashMap<>(); 
+        String name = "name_";
+        for (long i = 1; i <= categorySize; i++) {
+            String name2 = name+i;
+            categories.put(name2, Arrays.asList(i,i,i,i,i,i,i,i,i,i));
+        }
+        return categories;
+    }
     
 }
