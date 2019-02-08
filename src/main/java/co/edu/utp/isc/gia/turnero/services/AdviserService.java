@@ -101,7 +101,7 @@ public class AdviserService {
             return null;
         }
         
-        
+            
         
         turnCalled = listTurnsCalled.remove(0);
         turnCalled.setUpdated(updated);
@@ -259,6 +259,22 @@ public class AdviserService {
         
     }
     
+     public TurnResponse presenTurn(long adviserId) {
+          Adviser adviser = adviserRepository.getOne(adviserId);
+          List<Turn> listTurnsCalled = turnRepository.findByStateTurnAndAdviser("llamando", adviser);
+          Turn turn;
+          if (listTurnsCalled.isEmpty()) {
+             return null;
+         }
+          
+          turn = listTurnsCalled.get(0);
+          
+          TurnResponse turnResponse = TurnResponse.builder()
+                  .name(turn.getName())
+                  .build();
+          return turnResponse;
+    }
+    
     
     private Turn updateStateTurn(List<Turn> listTurns, String state, Adviser adviser) {
         Turn  turn = listTurns.remove(0);
@@ -351,5 +367,7 @@ public class AdviserService {
         }
         return res;
     }
+
+   
     
 }
