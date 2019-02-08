@@ -16566,3 +16566,7 @@ Database is already closed (to disable automatic closing at VM shutdown, add ";D
 	at org.springframework.context.support.AbstractApplicationContext.destroyBeans(AbstractApplicationContext.java:1035)
 	at org.springframework.context.support.AbstractApplicationContext.doClose(AbstractApplicationContext.java:1011)
 	at org.springframework.context.support.AbstractApplicationContext$1.run(AbstractApplicationContext.java:931)
+2019-02-08 18:13:49 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLException: Error de Sintaxis en sentencia SQL "INSERT INTO CATEGORY (ID, NAME, RESTRICTION, PRIORITY) VALUES (2, 'B',4, 2 [*]"; se esperaba "[, ::, *, /, %, +, -, ||, ~, !~, NOT, LIKE, ILIKE, REGEXP, IS, IN, BETWEEN, AND, OR, ,, )"
+Syntax error in SQL statement "INSERT INTO CATEGORY (ID, NAME, RESTRICTION, PRIORITY) VALUES (2, 'B',4, 2 [*]"; expected "[, ::, *, /, %, +, -, ||, ~, !~, NOT, LIKE, ILIKE, REGEXP, IS, IN, BETWEEN, AND, OR, ,, )"; SQL statement:
+INSERT INTO Category (id, name, restriction, priority) VALUES (2, 'B',4, 2 [42001-197]
