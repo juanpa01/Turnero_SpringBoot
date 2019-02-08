@@ -101,6 +101,8 @@ public class AdviserService {
             return null;
         }
         
+        
+        
         turnCalled = listTurnsCalled.remove(0);
         turnCalled.setUpdated(updated);
         turnRepository.save(turnCalled);
