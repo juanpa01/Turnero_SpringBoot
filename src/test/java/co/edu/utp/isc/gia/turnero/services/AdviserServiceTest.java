@@ -18,6 +18,7 @@ import co.edu.utp.isc.gia.turnero.ws.dto.AverageResponse;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.junit.Test;
 import static org.junit.Assert.*;
@@ -359,6 +360,15 @@ public class AdviserServiceTest {
         turnRepository.deleteAll();
         categoryRepository.deleteAll();
          assertNotNull(res);
+    }
+    
+    @Test
+    public void generateList(){
+        List <Integer> general = Arrays.asList(2,2,2,2,3,3,3,4,4,2,2,2,2,3,3,3,4,4,3,3,4,4,4,4);
+        
+        List<Integer> res = this.adviserService.generateList(4);
+        assertNotNull(res);
+        assertEquals(general, res);
     }
     
 }

@@ -13,15 +13,17 @@ import co.edu.utp.isc.gia.turnero.ws.dto.AverageResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.DisplayResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.EndTurnResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.NextTurnResponse;
-import co.edu.utp.isc.gia.turnero.ws.dto.TurnResponse;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -236,7 +238,7 @@ public class AdviserService {
         double finalMinutes = minutes / tam;
         
         AverageResponse averageResponse = AverageResponse.builder()
-                .minutes((long) Math.floor(finalMinutes ))
+                .minutes((int)(long)Math.floor(finalMinutes))
                 .build();
         
         return averageResponse;
@@ -284,14 +286,73 @@ public class AdviserService {
         return turn;
     }
     
-    public Map<String, List<Long>> generatelist(long categorySize) {
-        Map<String, List<Long>> categories = new HashMap<>(); 
+    public List<Integer> generateList(long categorySize) {
+       Map<String, Tuple> categories = new TreeMap<>(); 
         String name = "name_";
-        for (long i = 1; i <= categorySize; i++) {
+        long cont = 0;
+        int element = 0;
+        Tuple value;
+        List<Integer> general = new ArrayList<>();
+        
+        /*for (long i = 1; i <= categorySize; i++) {
             String name2 = name+i;
-            categories.put(name2, Arrays.asList(i,i,i,i,i,i,i,i,i,i));
+            categories.put(name2, new Tuple(0,Arrays.asList(i,i,i,i,i,i,i,i,i,i)));
+        }*/
+        categories.put("name_1", new Tuple(0, new LinkedList<>(Arrays.asList(1,1,1,1,1,1,1,1))));
+        categories.put("name_2", new Tuple(4, new LinkedList<>(Arrays.asList(2,2,2,2,2,2,2,2))));
+        categories.put("name_3", new Tuple(3, new LinkedList<>(Arrays.asList(3,3,3,3,3,3,3,3))));
+        categories.put("name_4", new Tuple(2, new LinkedList<>(Arrays.asList(4,4,4,4,4,4,4,4))));
+        
+  
+        Iterator<Map.Entry<String, Tuple>> it = categories.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Tuple> pair = it.next();
+            value = pair.getValue();
+            if(value.getTam() == 0) {
+                value.setLista(new ArrayList<>());
+                pair.setValue(value);
+            }
         }
-        return categories;
+
+        while(true) {
+            cont = 0;
+           Iterator<Map.Entry<String, Tuple>> its = categories.entrySet().iterator();
+            while (its.hasNext()) {
+                Map.Entry<String, Tuple> pair = its.next();
+                value = pair.getValue();
+                if (value.getLista().isEmpty()) {
+                    cont += 1;
+                }
+            }
+            
+            if (cont == categories.size()) {
+                break;
+            }
+            
+            Iterator<Map.Entry<String, Tuple>> itss = categories.entrySet().iterator();
+            while (itss.hasNext()) {
+                Map.Entry<String, Tuple> pair = itss.next();
+                value = pair.getValue();
+                if (value.getTam() < value.getLista().size()) {    
+                    for (int i = 0; i < value.getTam(); i++) {
+                        element = value.getLista().get(0);
+                        value.getLista().remove(0);
+                        general.add(element);
+                    }
+                } else {
+                    while(!value.getLista().isEmpty()) {
+                        element = value.getLista().get(0);
+                        value.getLista().remove(0);
+                        general.add(element);
+                    }
+                    
+                }
+            }
+        }
+        
+        
+
+        return general;
     }
     
 }
