@@ -53,7 +53,7 @@ public class AdviserControllerIT {
     public void testNextTurn() {
          this.adviserRepository.save(new Adviser("Juan", "1"));
         Adviser adviser = this.adviserRepository.findAll().get(0);
-          this.categoryRepository.save(new Category("A", "alta"));
+          this.categoryRepository.save(new Category("A", 1, 1));
           Category category = this.categoryRepository.findAll().get(0);
          this.turnRepository.save(new Turn("A1", "listado"));
          Turn turn = this.turnRepository.findAll().get(0);

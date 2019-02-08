@@ -115,6 +115,7 @@ public class AdviserController {
             return  ResponseEntity.status(HttpStatus.ACCEPTED).body(average);
         }
     }
+    
     /*
     @GetMapping("/{adviserId}/presentTurn")
     @ResponseBody

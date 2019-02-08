@@ -124,7 +124,8 @@ public class CategoryService {
         cont++;
         nameTurn = category.getName() + cont;
         category.setCont(cont);
-       
+        
+        newTurn.setPriority(category.getPriority());
         newTurn.setName(nameTurn);
         newTurn.setStateTurn("listado");
         newTurn.setCategory(category);

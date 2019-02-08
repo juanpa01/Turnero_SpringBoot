@@ -45,7 +45,10 @@ public class Category implements Serializable {
     private String name;
     
     @NonNull
-    private String priority;
+    private long restriction;
+    
+    @NonNull
+    private long priority;
     
     @Column(columnDefinition = "int default 1")
     private int cont;

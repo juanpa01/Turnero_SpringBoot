@@ -47,6 +47,9 @@ public class AdviserServiceTest {
     @Autowired
     private CategoryRepository categoryRepository;
     
+    @Autowired
+    private CategoryService categoryService;
+    
     @Test
     public void nextTurnCase1() {
         this.adviserRepository.save(new Adviser("Juan", "1"));
@@ -78,7 +81,7 @@ public class AdviserServiceTest {
         Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));
         long id = adviser.getId();
         
-        Category category =this.categoryRepository.save(new Category("A", "alta"));
+        Category category =this.categoryRepository.save(new Category("A", 1,3));
           
         Turn turn = this.turnRepository.save(new Turn("A1", "listado"));
         turn.setCreated(LocalDateTime.now());
@@ -104,7 +107,7 @@ public class AdviserServiceTest {
         Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));
         long id = adviser.getId();
         
-        Category category =this.categoryRepository.save(new Category("A", "alta"));
+        Category category =this.categoryRepository.save(new Category("A", 1,3));
           
         Turn turn = this.turnRepository.save(new Turn("A1", "listado"));
         turn.setCreated(LocalDateTime.now());
@@ -245,7 +248,7 @@ public class AdviserServiceTest {
         Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));
         long id = adviser.getId();
         
-        Category category =this.categoryRepository.save(new Category("A", "alta"));
+        Category category =this.categoryRepository.save(new Category("A", 1,3));
         
         Turn turn = this.turnRepository.save(new Turn("A1", "llamando"));
         turn.setAdviser(adviser);
@@ -311,7 +314,7 @@ public class AdviserServiceTest {
          Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));
         long id = adviser.getId();
         
-        Category category =this.categoryRepository.save(new Category("A", "alta"));
+        Category category =this.categoryRepository.save(new Category("A", 1, 3));
         
         Turn turn = this.turnRepository.save(new Turn("A1", "terminado"));
         turn.setAdviser(adviser);
@@ -344,7 +347,7 @@ public class AdviserServiceTest {
         Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));
         long id = adviser.getId();
         
-        Category category =this.categoryRepository.save(new Category("A", "alta"));
+        Category category =this.categoryRepository.save(new Category("A", 1,3));
         
         Turn turn = this.turnRepository.save(new Turn("A1", "terminado"));
         turn.setAdviser(adviser);
@@ -361,7 +364,56 @@ public class AdviserServiceTest {
         categoryRepository.deleteAll();
          assertNotNull(res);
     }
+    /*
+    @Test
+    public void generateListTurn() {
+        Category categoryA = this.categoryRepository.save( new Category( "A", 2, 2));
+        Category categoryB = this.categoryRepository.save( new Category( "B", 1, 1));
+        
+        Turn turnA1 = this.turnRepository.save(new Turn("A1", "listado"));
+        turnA1.setCreated(LocalDateTime.now());
+        turnA1.setCategory(categoryA);
+        turnA1.setPriority(categoryA.getPriority());
+        this.turnRepository.save(turnA1);
+        
+        Turn turnA2 = this.turnRepository.save(new Turn("A2", "listado"));
+        turnA2.setCreated(LocalDateTime.now());
+        turnA2.setCategory(categoryA);
+        turnA2.setPriority(categoryA.getPriority());
+        this.turnRepository.save(turnA2);
+        
+        Turn turnA3 = this.turnRepository.save(new Turn("A3", "listado"));
+        turnA3.setCreated(LocalDateTime.now());
+        turnA3.setCategory(categoryA);
+        turnA3.setPriority(categoryA.getPriority());
+        this.turnRepository.save(turnA3);
+        
+        Turn turnB1 = this.turnRepository.save(new Turn("B1", "listado"));
+        turnB1.setCreated(LocalDateTime.now());
+        turnB1.setCategory(categoryB);
+        turnB1.setPriority(categoryA.getPriority());
+        this.turnRepository.save(turnB1);
+        
+        Turn turnB2 = this.turnRepository.save(new Turn("B2", "listado"));
+        turnB2.setCreated(LocalDateTime.now());
+        turnB2.setCategory(categoryB);
+        turnB2.setPriority(categoryA.getPriority());
+        this.turnRepository.save(turnB2);
+        
+        Turn turnB3 = this.turnRepository.save(new Turn("B3", "listado"));
+        turnB3.setCreated(LocalDateTime.now());
+        turnB3.setCategory(categoryB);
+        turnB3.setPriority(categoryA.getPriority());
+        this.turnRepository.save(turnB3);
+        
+        List<Turn> general = Arrays.asList(turnB1, turnA1, turnA2, turnB2, turnA3, turnB3);
+        
+        List<Turn> res = this.adviserService.generateListTurn();
+        assertNotNull(res);
+        assertEquals(general, res);
+    }*/
     
+    /*
     @Test
     public void generateList(){
         List <Integer> general = Arrays.asList(2,2,2,2,3,3,3,4,4,2,2,2,2,3,3,3,4,4,3,3,4,4,4,4);
@@ -370,5 +422,5 @@ public class AdviserServiceTest {
         assertNotNull(res);
         assertEquals(general, res);
     }
-    
+    */
 }

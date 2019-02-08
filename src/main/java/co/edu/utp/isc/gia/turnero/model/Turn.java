@@ -48,6 +48,12 @@ public class Turn implements Serializable {
     @NonNull
     private String name;
     
+     @NonNull
+    private String stateTurn;
+    
+     @Nullable
+     private long priority;
+     
     @CreationTimestamp
     private LocalDateTime created;
     
@@ -59,9 +65,6 @@ public class Turn implements Serializable {
     
     @Nullable
     private LocalTime finalTime;
-    
-    @NonNull
-    private String stateTurn;
     
     //Relacion Asesor
     @ManyToOne(optional = true)

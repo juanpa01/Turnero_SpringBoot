@@ -22,7 +22,7 @@ import lombok.Setter;
 public class CategoryResponse implements Serializable {
     private long id;
     private String name;
-    private String priority;
+    private long priority;
     private int cont;
     private int turns = 0;
 }

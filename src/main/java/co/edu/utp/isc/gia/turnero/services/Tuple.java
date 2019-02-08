@@ -5,6 +5,7 @@
  */
 package co.edu.utp.isc.gia.turnero.services;
 
+import co.edu.utp.isc.gia.turnero.model.Turn;
 import java.util.List;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -20,9 +21,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Tuple {
-    private long tam;
-    private List<Integer> lista;
+    private long restriction;
+    private List<Turn> turns;
 
-    
-    
 }

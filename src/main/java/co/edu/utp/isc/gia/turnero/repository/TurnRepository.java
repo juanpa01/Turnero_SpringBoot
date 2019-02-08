@@ -6,6 +6,7 @@
 package co.edu.utp.isc.gia.turnero.repository;
 
 import co.edu.utp.isc.gia.turnero.model.Adviser;
+import co.edu.utp.isc.gia.turnero.model.Category;
 import co.edu.utp.isc.gia.turnero.model.Turn;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -34,5 +35,9 @@ public interface TurnRepository extends JpaRepository<Turn, Long> {
     public List<Turn> findByStateTurnAndAdviserOrderByUpdatedDesc(String llamando, Adviser adviser);
 
     public List<Turn> findByStateTurnAndAdviserOrderByUpdatedAsc(String llamando, Adviser adviser);
+
+    public List<Turn> findByStateTurnAndCategoryOrderByCreatedDesc(String listado, Category category);
+
+    public List<Turn> findByStateTurnAndCategory(String listado, Category category);
 
 }

@@ -6,13 +6,16 @@
 package co.edu.utp.isc.gia.turnero.services;
 
 import co.edu.utp.isc.gia.turnero.model.Adviser;
+import co.edu.utp.isc.gia.turnero.model.Category;
 import co.edu.utp.isc.gia.turnero.model.Turn;
 import co.edu.utp.isc.gia.turnero.repository.AdviserRepository;
+import co.edu.utp.isc.gia.turnero.repository.CategoryRepository;
 import co.edu.utp.isc.gia.turnero.repository.TurnRepository;
 import co.edu.utp.isc.gia.turnero.ws.dto.AverageResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.DisplayResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.EndTurnResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.NextTurnResponse;
+import co.edu.utp.isc.gia.turnero.ws.dto.TurnResponse;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.temporal.ChronoUnit;
@@ -40,6 +43,11 @@ public class AdviserService {
     
     @Autowired
     AdviserRepository adviserRepository;
+    
+    @Autowired
+    CategoryRepository categoryRepository;
+    
+    List<Turn> orderTurns = new ArrayList<>(); 
    
     public NextTurnResponse nextTurn(long adviserId){
         Adviser adviser = adviserRepository.getOne(adviserId);
@@ -47,21 +55,25 @@ public class AdviserService {
         List<Turn> listTurnsCalled = turnRepository.findByStateTurnAndAdviser("llamando", adviser);
         Turn turn = null;
         
-        if ((listTurnsWait.isEmpty() && listTurnsCalled.isEmpty()) || adviser == null) {
+        if ((listTurnsWait.isEmpty() && listTurnsCalled.isEmpty() && orderTurns.isEmpty()) || adviser == null) {
             return null;
         } 
         
-        if (listTurnsWait.isEmpty() && !listTurnsCalled.isEmpty()) {
+        if (orderTurns.isEmpty() && !listTurnsWait.isEmpty()) {
+            orderTurns =  this.generateListTurn();
+        }
+        
+        if (orderTurns.isEmpty() && !listTurnsCalled.isEmpty()) {
             updateStateTurn(listTurnsCalled, "llamando", adviser);
             return null;
         } 
         
-        if (!listTurnsWait.isEmpty() && listTurnsCalled.isEmpty()) {
-            turn = updateStateTurn(listTurnsWait, "listado", adviser);
+        if (!orderTurns.isEmpty() && listTurnsCalled.isEmpty()) {
+            turn = updateStateTurn(orderTurns, "listado", adviser);
         }
         
-        if (!listTurnsWait.isEmpty() && !listTurnsCalled.isEmpty()) {
-            turn = updateStateTurn(listTurnsWait, "listado", adviser);
+        if (!orderTurns.isEmpty() && !listTurnsCalled.isEmpty()) {
+            turn = updateStateTurn(orderTurns, "listado", adviser);
             updateStateTurn(listTurnsCalled, "llamando", adviser);
         } 
         
@@ -245,6 +257,7 @@ public class AdviserService {
         
     }
     
+    
     private Turn updateStateTurn(List<Turn> listTurns, String state, Adviser adviser) {
         Turn  turn = listTurns.remove(0);
          LocalDateTime updated = LocalDateTime.now();
@@ -286,41 +299,27 @@ public class AdviserService {
         return turn;
     }
     
-    public List<Integer> generateList(long categorySize) {
-       Map<String, Tuple> categories = new TreeMap<>(); 
-        String name = "name_";
+    private List<Turn> generateListTurn() {
+        Map<Long, Tuple> categories = new TreeMap<>();
         long cont = 0;
-        int element = 0;
         Tuple value;
-        List<Integer> general = new ArrayList<>();
+        Turn temporal;
+        List<Turn> general;
+        List<Turn> res = new ArrayList<>();
+        List<Category> listCategory = this.categoryRepository.findAll();
         
-        /*for (long i = 1; i <= categorySize; i++) {
-            String name2 = name+i;
-            categories.put(name2, new Tuple(0,Arrays.asList(i,i,i,i,i,i,i,i,i,i)));
-        }*/
-        categories.put("name_1", new Tuple(0, new LinkedList<>(Arrays.asList(1,1,1,1,1,1,1,1))));
-        categories.put("name_2", new Tuple(4, new LinkedList<>(Arrays.asList(2,2,2,2,2,2,2,2))));
-        categories.put("name_3", new Tuple(3, new LinkedList<>(Arrays.asList(3,3,3,3,3,3,3,3))));
-        categories.put("name_4", new Tuple(2, new LinkedList<>(Arrays.asList(4,4,4,4,4,4,4,4))));
-        
-  
-        Iterator<Map.Entry<String, Tuple>> it = categories.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<String, Tuple> pair = it.next();
-            value = pair.getValue();
-            if(value.getTam() == 0) {
-                value.setLista(new ArrayList<>());
-                pair.setValue(value);
-            }
+        for (Category category: listCategory) {
+            general = this.turnRepository.findByStateTurnAndCategory("listado", category);
+            categories.put(category.getPriority(), new Tuple(category.getRestriction(),new LinkedList<>(general)));
         }
-
+        
         while(true) {
             cont = 0;
-           Iterator<Map.Entry<String, Tuple>> its = categories.entrySet().iterator();
+           Iterator<Map.Entry<Long, Tuple>> its = categories.entrySet().iterator();
             while (its.hasNext()) {
-                Map.Entry<String, Tuple> pair = its.next();
+                Map.Entry<Long, Tuple> pair = its.next();
                 value = pair.getValue();
-                if (value.getLista().isEmpty()) {
+                if (value.getTurns().isEmpty()) {
                     cont += 1;
                 }
             }
@@ -329,30 +328,26 @@ public class AdviserService {
                 break;
             }
             
-            Iterator<Map.Entry<String, Tuple>> itss = categories.entrySet().iterator();
+            Iterator<Map.Entry<Long, Tuple>> itss = categories.entrySet().iterator();
             while (itss.hasNext()) {
-                Map.Entry<String, Tuple> pair = itss.next();
+                Map.Entry<Long, Tuple> pair = itss.next();
                 value = pair.getValue();
-                if (value.getTam() < value.getLista().size()) {    
-                    for (int i = 0; i < value.getTam(); i++) {
-                        element = value.getLista().get(0);
-                        value.getLista().remove(0);
-                        general.add(element);
+                if (value.getRestriction() < value.getTurns().size()) {    
+                    for (int i = 0; i < value.getRestriction(); i++) {
+                        temporal = value.getTurns().get(0);
+                        value.getTurns().remove(0);
+                        res.add(temporal);
                     }
                 } else {
-                    while(!value.getLista().isEmpty()) {
-                        element = value.getLista().get(0);
-                        value.getLista().remove(0);
-                        general.add(element);
-                    }
-                    
+                    while(!value.getTurns().isEmpty()) {
+                        temporal = value.getTurns().get(0);
+                        value.getTurns().remove(0);
+                        res.add(temporal);
+                    }                 
                 }
             }
         }
-        
-        
-
-        return general;
+        return res;
     }
     
 }
