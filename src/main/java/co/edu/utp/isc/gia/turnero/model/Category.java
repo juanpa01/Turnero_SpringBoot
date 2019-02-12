@@ -45,13 +45,16 @@ public class Category implements Serializable {
     private String name;
     
     @NonNull
-    private long restriction;
+    private int restriction;
     
     @NonNull
-    private long priority;
+    private int priority;
     
-    @Column(columnDefinition = "int default 1")
-    private int cont;
+    @Column(columnDefinition = "int default 0")
+    private int stateCategory;
+    
+    @Column(columnDefinition = "int default 0")
+    private long cont;
     
     @OneToMany(mappedBy="category", cascade = CascadeType.ALL)
     private List<Turn> turns;

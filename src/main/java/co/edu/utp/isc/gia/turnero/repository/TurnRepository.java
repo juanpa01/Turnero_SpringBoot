@@ -40,4 +40,10 @@ public interface TurnRepository extends JpaRepository<Turn, Long> {
 
     public List<Turn> findByStateTurnAndCategory(String listado, Category category);
 
+    public List<Turn> findByStateTurnAndPriorityOrderByCreatedDesc(String listado, long priority);
+
+    public List<Turn> findByStateTurnAndPriorityOrderByCreatedAsc(String listado, long priority);
+
+    public List<Turn> findByStateTurnAndCategoryOrderByCreatedAsc(String listado, Category category2);
+
 }

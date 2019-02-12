@@ -23,6 +23,6 @@ public class CategoryResponse implements Serializable {
     private long id;
     private String name;
     private long priority;
-    private int cont;
+    private long cont;
     private int turns = 0;
 }

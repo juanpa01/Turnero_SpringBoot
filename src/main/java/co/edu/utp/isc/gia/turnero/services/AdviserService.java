@@ -12,6 +12,7 @@ import co.edu.utp.isc.gia.turnero.repository.AdviserRepository;
 import co.edu.utp.isc.gia.turnero.repository.CategoryRepository;
 import co.edu.utp.isc.gia.turnero.repository.TurnRepository;
 import co.edu.utp.isc.gia.turnero.ws.dto.AverageResponse;
+import co.edu.utp.isc.gia.turnero.ws.dto.CategoryResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.DisplayResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.EndTurnResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.NextTurnResponse;
@@ -45,34 +46,33 @@ public class AdviserService {
     AdviserRepository adviserRepository;
     
     @Autowired
-    CategoryRepository categoryRepository;
-    
-    List<Turn> orderTurns = new ArrayList<>(); 
+    CategoryRepository categoryRepository;; 
    
     public NextTurnResponse nextTurn(long adviserId){
         Adviser adviser = adviserRepository.getOne(adviserId);
         List<Turn> listTurnsWait = turnRepository.findByStateTurnOrderByCreatedAsc("listado");
         List<Turn> listTurnsCalled = turnRepository.findByStateTurnAndAdviser("llamando", adviser);
+        List<Turn> orderTurns; 
         Turn turn = null;
         
-        if ((listTurnsWait.isEmpty() && listTurnsCalled.isEmpty() && orderTurns.isEmpty()) || adviser == null) {
+        if ((listTurnsWait.isEmpty() && listTurnsCalled.isEmpty()) || adviser == null) {
             return null;
         } 
         
-        if (orderTurns.isEmpty() && !listTurnsWait.isEmpty()) {
-            orderTurns =  this.generateListTurn();
-        }
         
-        if (orderTurns.isEmpty() && !listTurnsCalled.isEmpty()) {
+        orderTurns = this.generateNextTurn();
+        
+        
+        if (listTurnsWait.isEmpty() && !listTurnsCalled.isEmpty()) {
             updateStateTurn(listTurnsCalled, "llamando", adviser);
             return null;
         } 
         
-        if (!orderTurns.isEmpty() && listTurnsCalled.isEmpty()) {
+        if (!listTurnsWait.isEmpty() && listTurnsCalled.isEmpty()) {
             turn = updateStateTurn(orderTurns, "listado", adviser);
         }
         
-        if (!orderTurns.isEmpty() && !listTurnsCalled.isEmpty()) {
+        if (!listTurnsWait.isEmpty() && !listTurnsCalled.isEmpty()) {
             turn = updateStateTurn(orderTurns, "listado", adviser);
             updateStateTurn(listTurnsCalled, "llamando", adviser);
         } 
@@ -317,57 +317,132 @@ public class AdviserService {
         return turn;
     }
     
-    private List<Turn> generateListTurn() {
-        Map<Long, Tuple> categories = new TreeMap<>();
-        long cont = 0;
-        Tuple value;
-        Turn temporal;
-        List<Turn> general;
+    public List<Turn> generateNextTurn() {
+        List<Category> categories = this.categoryRepository.findAllByOrderByPriority();
         List<Turn> res = new ArrayList<>();
-        List<Category> listCategory = this.categoryRepository.findAll();
+        List<Turn> listTurnWait;
+         List<Turn> listTurnWait2;
+         Turn turn2;
+        long cont = 0;
         
-        for (Category category: listCategory) {
-            general = this.turnRepository.findByStateTurnAndCategory("listado", category);
-            categories.put(category.getPriority(), new Tuple(category.getRestriction(),new LinkedList<>(general)));
-        }
-        
-        while(true) {
-            cont = 0;
-           Iterator<Map.Entry<Long, Tuple>> its = categories.entrySet().iterator();
-            while (its.hasNext()) {
-                Map.Entry<Long, Tuple> pair = its.next();
-                value = pair.getValue();
-                if (value.getTurns().isEmpty()) {
-                    cont += 1;
-                }
+        for (Category category: categories) {
+            
+            if (category.getStateCategory() == category.getRestriction()) {
+                cont += 1;
             }
             
             if (cont == categories.size()) {
-                break;
+                categories.forEach((categoryUpdate) -> {
+                    categoryUpdate.setStateCategory(0);
+                });
             }
+        }  
+        
+        for (Category category: categories) {
             
-            Iterator<Map.Entry<Long, Tuple>> itss = categories.entrySet().iterator();
-            while (itss.hasNext()) {
-                Map.Entry<Long, Tuple> pair = itss.next();
-                value = pair.getValue();
-                if (value.getRestriction() < value.getTurns().size()) {    
-                    for (int i = 0; i < value.getRestriction(); i++) {
-                        temporal = value.getTurns().get(0);
-                        value.getTurns().remove(0);
-                        res.add(temporal);
+            listTurnWait = this.turnRepository.findByStateTurnAndPriorityOrderByCreatedAsc("listado", category.getPriority());
+            if (!listTurnWait.isEmpty()) {
+                for (Turn turn: listTurnWait) {
+                    if (!turn.getCategory().equals(category)) {
+                        category = turn.getCategory();
                     }
-                } else {
-                    while(!value.getTurns().isEmpty()) {
-                        temporal = value.getTurns().get(0);
-                        value.getTurns().remove(0);
-                        res.add(temporal);
-                    }                 
+                    if (category.getStateCategory() < category.getRestriction()) {
+                        category.setStateCategory(category.getStateCategory() + 1);
+
+                       res.add(turn);
+                        return res;
+                    }               
+                }
+            }   
+        }
+        if (res.isEmpty()) {
+            for (Category category: categories) {
+                listTurnWait2 = this.turnRepository.findByStateTurnOrderByCreatedAsc("listado");
+                if (!listTurnWait2.isEmpty()) {
+                    turn2 = listTurnWait2.get(0);
+                    if (turn2.getCategory().equals(category)) {
+                         res.add(turn2);
+                        return res;
+                    }
                 }
             }
         }
         return res;
     }
 
+    public List<TurnResponse> test() {
+        List<Category> categories = this.categoryRepository.findAll();
+        Adviser adviser = this.adviserRepository.getOne((long)4);
+        List<TurnResponse> res = new ArrayList<>(); 
+        List<Turn> listTurnWait;
+        List<Turn> listTurnWait2;
+        Turn turn2;
+        List<Turn> general = new ArrayList<>();
+        long cont = 0;    
+        
+        for (Category category: categories) {
+            
+            if (category.getStateCategory() >= category.getRestriction()) {
+                cont += 1;
+            }
+            
+            if (cont == categories.size()) {
+                categories.forEach((categoryUpdate) -> {
+                    categoryUpdate.setStateCategory(0);
+                });
+            }   
+        }
+         
+        for (Category category: categories) {
+            listTurnWait = this.turnRepository.findByStateTurnAndPriorityOrderByCreatedAsc("listado", category.getPriority());
+            if (!listTurnWait.isEmpty()) {
+                for (Turn turn: listTurnWait) {
+                    if (!turn.getCategory().equals(category)) {
+                        category = turn.getCategory();
+                    }
+                    if (category.getStateCategory() < category.getRestriction()) {
+                        category.setStateCategory(category.getStateCategory() + 1);
+
+                       TurnResponse turnResponse = TurnResponse.builder()
+                               .id(category.getRestriction())
+                                .name(turn.getName())
+                                .category(turn.getCategory().getId())
+                                .priority(category.getStateCategory())
+                                    .stateTurn(" contador ==> "+ cont)
+                                .build();
+
+                        res.add(turnResponse);
+                        general.add(turn);
+
+                        updateStateTurn(general, "listado", adviser);
+                        return res;
+                    }               
+                }
+            }   
+        }
+        if (res.isEmpty()) {
+            for (Category category: categories) {
+                listTurnWait2 = this.turnRepository.findByStateTurnAndCategoryOrderByCreatedAsc("listado", category);
+                if (!listTurnWait2.isEmpty()) {
+                    turn2 = listTurnWait2.get(0);
+                    TurnResponse turnResponse = TurnResponse.builder()
+                               .id(category.getRestriction())
+                                .name(turn2.getName())
+                                .category(turn2.getCategory().getId())
+                                .priority(category.getStateCategory())
+                                    .stateTurn(" contador ==> "+ cont)
+                                .build();
+
+                        res.add(turnResponse);
+                        general.add(turn2);
+
+                        updateStateTurn(general, "listado", adviser);
+                        return res;
+                }
+            }
+        }
+        return res;
+    }
    
     
 }

@@ -8,6 +8,7 @@ package co.edu.utp.isc.gia.turnero.ws.controller;
 import co.edu.utp.isc.gia.turnero.services.AdviserService;
 import co.edu.utp.isc.gia.turnero.services.TurnService;
 import co.edu.utp.isc.gia.turnero.ws.dto.AverageResponse;
+import co.edu.utp.isc.gia.turnero.ws.dto.CategoryResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.DisplayResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.EndTurnResponse;
 import co.edu.utp.isc.gia.turnero.ws.dto.NextTurnResponse;
@@ -123,6 +124,18 @@ public class AdviserController {
         TurnResponse presentTurn = adviserService.presenTurn(adviserId);
         
         if (presentTurn == null) {
+            return  ResponseEntity.notFound().build();
+        } else {
+            return  ResponseEntity.status(HttpStatus.ACCEPTED).body(presentTurn);
+        }
+    }
+    
+    @GetMapping("/test")
+    @ResponseBody
+    public ResponseEntity<List<TurnResponse>> test() {
+        List<TurnResponse> presentTurn = adviserService.test();
+        
+        if (presentTurn.isEmpty()) {
             return  ResponseEntity.notFound().build();
         } else {
             return  ResponseEntity.status(HttpStatus.ACCEPTED).body(presentTurn);

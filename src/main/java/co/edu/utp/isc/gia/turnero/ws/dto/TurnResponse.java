@@ -26,6 +26,7 @@ public class TurnResponse {
     private long id;
     private String name;
     private String stateTurn;
+    private long priority;
     private LocalDateTime created;
     private long category;
     

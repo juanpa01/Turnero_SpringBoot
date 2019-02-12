@@ -111,7 +111,7 @@ public class CategoryService {
     public TurnResponse generateTurn(long categoryId) {
         Turn newTurn = new Turn();
         String nameTurn;
-        int cont;
+        long cont;
        Category category = null;
         
         if (categoryRepository.existsById(categoryId) ) {
