@@ -360,10 +360,10 @@ public class AdviserService {
                 listTurnWait2 = this.turnRepository.findByStateTurnOrderByCreatedAsc("listado");
                 if (!listTurnWait2.isEmpty()) {
                     turn2 = listTurnWait2.get(0);
-                    if (turn2.getCategory().equals(category)) {
-                         res.add(turn2);
-                        return res;
-                    }
+
+                    res.add(turn2);
+                    return res;
+
                 }
             }
         }

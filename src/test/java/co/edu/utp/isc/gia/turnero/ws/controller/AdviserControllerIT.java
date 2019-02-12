@@ -27,6 +27,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  *
@@ -50,17 +51,26 @@ public class AdviserControllerIT {
     private TestRestTemplate restTemplate;
     
     @Test
+    @Transactional
     public void testNextTurn() {
-         this.adviserRepository.save(new Adviser("Juan", "1"));
-        Adviser adviser = this.adviserRepository.findAll().get(0);
-          this.categoryRepository.save(new Category("A", 1, 1));
-          Category category = this.categoryRepository.findAll().get(0);
-         this.turnRepository.save(new Turn("A1", "listado"));
-         Turn turn = this.turnRepository.findAll().get(0);
+        Adviser adviser = this.adviserRepository.save(new Adviser("Juan", "1"));
+       
+          Category category = this.categoryRepository.save(new Category("A", 5, 1));
+          Category categoryB = this.categoryRepository.save(new Category("B", 3, 1));
+      
+         Turn turn = this.turnRepository.save(new Turn("A1", "listado"));
+        turn.setPriority(category.getPriority());
         turn.setAdviser(adviser);
         turn.setCreated(LocalDateTime.now());
         turn.setCategory(category);
         this.turnRepository.save(turn);
+        
+        Turn turn2 = this.turnRepository.save(new Turn("B1", "listado"));
+        turn2.setPriority(categoryB.getPriority());
+        turn2.setAdviser(adviser);
+        turn2.setCreated(LocalDateTime.now());
+        turn2.setCategory(categoryB);
+        this.turnRepository.save(turn2);
         
         long id = adviser.getId();
         
@@ -71,9 +81,10 @@ public class AdviserControllerIT {
                 new ParameterizedTypeReference<NextTurnResponse>() {}
         );
         
+        turnRepository.deleteAll();
         adviserRepository.deleteAll();
         categoryRepository.deleteAll();
-        turnRepository.deleteAll();
+        
         
         Assert.assertEquals(HttpStatus.ACCEPTED, result.getStatusCode() );
         

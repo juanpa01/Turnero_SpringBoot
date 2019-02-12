@@ -423,7 +423,7 @@ public class AdviserServiceTest {
         assertEquals(general, res);
     }
     */
-    
+    /*
     @Test
     public void generateNextTurn() {
         Category categoryA = this.categoryRepository.save( new Category( "A", 5, 1));
@@ -484,4 +484,5 @@ public class AdviserServiceTest {
         assertNotNull(res2);
         assertEquals(general2, res2);
     }
+    */
 }
